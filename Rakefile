@@ -460,3 +460,35 @@ task :diff_rubinius do
   sh "diff #{diff_options} test #{rubinius_dir}/test/rubygems; true"
   sh "diff #{diff_options} util/gem_prelude.rb #{rubinius_dir}/kernel/core/gem_prelude.rb; true"
 end
+
+desc "Create a Debian package."
+task :deb do
+  require 'fileutils'
+  
+  def interpolate_file(input, output, interpolations)
+    contents = File.read(input)
+    interpolations.each_pair do |key, value|
+      contents.gsub!(/@@#{key}@@/, value)
+    end
+    FileUtils.mkdir_p(File.dirname(output))
+    File.open(output, "w") do |f|
+      f.write(contents)
+    end
+  end
+  
+  File.read("debian/specs/control") =~ /^Version: (.*)$/
+  version = $1
+  sh "rm -rf fakeroot"
+  sh "mkdir fakeroot"
+  ruby "setup.rb", "--destdir=#{Dir.getwd}/fakeroot/usr", "--no-format-executable"
+  sh "mkdir -p fakeroot/usr/lib/ruby/1.8"
+  sh "mv fakeroot/usr/local/lib/site_ruby/1.8/* fakeroot/usr/lib/ruby/1.8/"
+  sh "rm -rf fakeroot/usr/local"
+  
+  sh "cp -R debian/specs fakeroot/DEBIAN"
+  interpolate_file("debian/bash_completion.in", "fakeroot/etc/bash_completion.d/gem1.8",
+    :VERSION => '1.8', :DOTLESS_VERSION => '18')
+  
+  sh "mkdir -p pkg"
+  sh "fakeroot dpkg -b fakeroot pkg/rubygems_#{version}_all.deb"
+end

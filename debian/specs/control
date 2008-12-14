@@ -1,0 +1,23 @@
+Package: rubygems
+Version: 1.3.1-debgem1
+Priority: optional
+Section: interpreters
+Architecture: all
+Essential: no
+Depends: ruby1.8, rdoc1.8
+Maintainer: Hongli Lai <hongli@phusion.nl>
+Replaces: rubygems1.8, libgems-ruby, libgems-ruby1.8
+Conflicts: rubygems1.8, libgems-ruby, libgems-ruby1.8
+Installed-Size: 650
+Description: Package management framework for Ruby libraries/applications
+ This is a way to package Ruby libraries/applications for distribution.
+ RubyGems provides the ability to manage concurrent versions of libraries and
+ dependencies between those libraries. Using RubyGems, you can:
+   * download and install Ruby libraries easily
+   * not worry about libraries A and B depending on different versions of
+     library C
+   * easily remove libraries you no longer use
+ .
+ This package contains RubyGems' commands like /usr/bin/gem.
+ .
+ Homepage: http://www.rubygems.org/
